@@ -1,0 +1,13 @@
+﻿# Default ignored files
+DefenseGame/shelf/
+DefenseGame/workspace.xml
+# Rider ignored files
+DefenseGame/.idea.Defense.iml
+DefenseGame/modules.xml
+DefenseGame/contentModel.xml
+DefenseGame/projectSettingsUpdater.xml
+# Editor-based HTTP Client requests
+DefenseGame/httpRequests/
+# Datasource local storage ignored files
+DefenseGame/dataSources/
+DefenseGame/dataSources.local.xml
