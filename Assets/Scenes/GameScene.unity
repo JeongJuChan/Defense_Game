@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.42221254, g: 0.64316183, b: 0.793691, a: 1}
+  m_IndirectSpecularColor: {r: 0.42222098, g: 0.64365846, b: 0.7936594, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1953,28 +1953,31 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemDB:
-  - itemType: 0
+  - itemType: 1
     itemName: Dagger
     itemmesh: {fileID: 4300000, guid: db56260143b5948a88d20ae44f2441a0, type: 3}
     itemImage2: {fileID: 2100000, guid: 1c8657c6b5cdc4eb5bcac1968488b356, type: 2}
     Image: {fileID: 21300000, guid: a3e33b22887cb3d47af3d7ef198d08a4, type: 3}
     ItemList: 1
+    attackType: 2
     efts:
     - {fileID: 11400000, guid: 6ed73e88258565f498a65df1f1f55f17, type: 2}
-  - itemType: 0
+  - itemType: 1
     itemName: Sword
     itemmesh: {fileID: 4300000, guid: 72be0c703037640cf97b8487e7a0d830, type: 3}
     itemImage2: {fileID: 2100000, guid: 1c8657c6b5cdc4eb5bcac1968488b356, type: 2}
     Image: {fileID: 21300000, guid: d53a62065411f524ea47397276eb7189, type: 3}
     ItemList: 0
+    attackType: 1
     efts:
     - {fileID: 11400000, guid: 658e1bed561f2aa48a0186072843c3ba, type: 2}
-  - itemType: 1
+  - itemType: 2
     itemName: HpPotion
     itemmesh: {fileID: 4300000, guid: 2a7aeccaf51cb44258e96e4127ac8d7e, type: 3}
     itemImage2: {fileID: 2100000, guid: 6b051bc964265438b9edf8fb79c57ccb, type: 2}
     Image: {fileID: 21300000, guid: b2ee5c06d3a29d642a22b7cdb930eeed, type: 3}
     ItemList: 2
+    attackType: 0
     efts:
     - {fileID: 11400000, guid: bd47ad7306ca1074bb37cb79406819fa, type: 2}
   fieldItemPrefab: {fileID: 3020946756175942361, guid: c0213749e1f397c429d093d1284892a3, type: 3}
@@ -2411,7 +2414,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 80
+  m_Constraints: 112
   m_CollisionDetection: 0
 --- !u!136 &2007254446
 CapsuleCollider:

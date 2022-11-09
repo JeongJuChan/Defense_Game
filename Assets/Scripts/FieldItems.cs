@@ -19,7 +19,6 @@ public class FieldItems : MonoBehaviour
         meshFilter.mesh = _item.itemmesh;
         meshcollider.sharedMesh = _item.itemmesh;
 
-
         item.itemName = _item.itemName;
         item.itemmesh = _item.itemmesh;
         item.itemType = _item.itemType;
@@ -27,6 +26,7 @@ public class FieldItems : MonoBehaviour
         item.Image = _item.Image;
         item.efts = _item.efts;
         item.ItemList = _item.ItemList;
+        item.attackType = _item.attackType;
     }
 
     public Item GetItem()

@@ -22,7 +22,6 @@ public class Slot : MonoBehaviour, IPointerUpHandler
     private void Start()
     {
         player_status = GetComponentInParent<PlayerController>();
-        player_status.Equipment = "1";
         _animator = player_status.GetComponentInChildren<Animator>();
     }
 
@@ -61,81 +60,41 @@ public class Slot : MonoBehaviour, IPointerUpHandler
         if (isUse)
         {
             //HP포션 사용
-            if (item.itemName == "HpPotion")
+            if (item.itemType == ItemType.Consumables)
             {
                 Debug.Log("Hp를 회복하였습니다!");
                 GetComponentInParent<Inventory>().ItemDict[item.ItemList].SetActive(true);
                 inventory.RemoveItem(slotnum);
-            }
-
-            // 장비를 장착하고 있을때
-            if (player_status.IsEquip == true) {
-
-                if (player_status.Equipment == "Sword")
-                {
-                    //Sword 사용
-                    if (item.itemName == "Sword")
-                    {
-                        _animator.SetTrigger("UnEquip");
-                        Debug.Log("Sword를 장착 해제하였습니다!");
-                        player_status.Equipment = "";
-                        ;
-                        // 실질적으로 데미지를 내려줄 스크립트 
-                        player_status.IsEquip = false;
-                        player_status._damage = player_status._damage - item.efts[0].value;
-                    }
-                }
-
-                //Dagger 사용
-                if (item.itemName == "Dagger")
-                {
-                    _animator.SetTrigger("UnEquip");
-                    Debug.Log("Dagger를 장착 해제하였습니다!");
-                    player_status.Equipment = "";
-                    // UI적으로 보여줄 스트립트
-                    GetComponentInParent<Inventory>().ItemDict[item.ItemList].SetActive(false);
-                    // 실질적으로 데미지를 내려줄 스크립트 
-                    player_status.IsEquip = false;
-                    player_status._damage = player_status._damage - item.efts[0].value;
-                }
-
+                return;
             }
 
             // 장비를 장착하지 않고있을때
-            else
+            if (item.itemType == ItemType.Equipment)
             {
-                //Sword 사용
-                if (item.itemName == "Sword")
+                bool isEquip = player_status.GetIsEquip();
+                if (!isEquip)
                 {
-                    _animator.SetTrigger("Equip");
-                    Debug.Log("Sword를 장착하였습니다!");
+                    player_status.SetIsEquip(true);
+                    //Debug.Log("Sword를 장착하였습니다!");
                     // UI적으로 보여줄 스트립트
-                    player_status.Equipment = "Sword";
-                    GetComponentInParent<Inventory>().ItemDict[item.ItemList].SetActive(true);
+                    player_status.WeaponSet(item ,true);
                     // 실질적으로 데미지를 올려줄 스크립트 
-                    player_status.IsEquip = true;
-                    player_status._damage = player_status._damage + item.efts[0].value;
-
-
-
-
-                    player_status.IsEquip = true;
+                    player_status._damage += item.efts[0].value;
+                    Debug.Log(item.attackType);
+                    player_status.SetAttackType(item.attackType);
                 }
-
-                //Dagger 사용
-                if (item.itemName == "Dagger")
+                else
                 {
-                    _animator.SetTrigger("Equip");
-                    Debug.Log("Dagger를 장착하였습니다!");
-                    player_status.Equipment = "Dagger";
-                    // UI적으로 보여줄 스트립트
-                    GetComponentInParent<Inventory>().ItemDict[item.ItemList].SetActive(true);
-                    // 실질적으로 데미지를 올려줄 스크립트 
-                    player_status.IsEquip = true;
-                    player_status._damage = player_status._damage + item.efts[0].value;
+                    player_status.SetIsEquip(false);
+                    //Debug.Log("Sword를 장착 해제하였습니다!");
+                    player_status.WeaponSet(item ,false);
+                    // 실질적으로 데미지를 내려줄 스크립트 
+                    player_status._damage -= item.efts[0].value;
+                    player_status.SetAttackType(AttackType.None);
                 }
             }
-            
         }
     }
 }
+
+

@@ -4,31 +4,41 @@ using System.Collections.Generic;
 using Photon.Pun;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using Random = UnityEngine.Random;
 
+public enum AttackType
+{
+    None,
+    Sword,
+    Dagger
+}
 
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerController : MonoBehaviourPunCallbacks
 {
+    //무기 장착 여부 
+    public int _damage = 5;
+    
     [SerializeField] float _speed = 100f;
     [SerializeField] float _radius = 1f;
     [SerializeField] float _jumpPower = 0.4f;
     [SerializeField] float _sprintSpeed = 200f;
-    // TODO : -
-    
     [SerializeField] bool _isGrounded;
     [SerializeField] bool _isSprint;
     [SerializeField] Transform _camTrans;
     [SerializeField] float _moveAnimationMod = 200f;
     [SerializeField] float _jumpTime = 1f;
     [SerializeField] float _jumpTimer = 0f;
-    [SerializeField] int AttackType;
+    [SerializeField] AttackType _attackType;
+    [SerializeField] bool _isEquip;
 
     int _animXSpeed;
     int _animYSpeed;
     int _animJump;
     int _animAttack;
+    int _animIsEquip;
 
     float _offsetSpeed;
     bool _canJump = true;
@@ -39,18 +49,17 @@ public class PlayerController : MonoBehaviourPunCallbacks
     AnimationEventHandler _animationEventHandler;
     Transform _playerBody;
     PhotonView _pv;
+    Inventory _inventory;
+    Item _currentItem;
+    bool _itemActive;
 
-    //무기 장착 여부 
-    public bool IsEquip = false;
-    public int _damage = 10;
-    public string Equipment;
+    
+    
     void Start()
     {
-        Equipment = "";
         Debug.Log("플레이어 생성 !");
         Init();
         AnimInit();
-        Debug.Log(Equipment);
     }
     
     void Init()
@@ -62,7 +71,9 @@ public class PlayerController : MonoBehaviourPunCallbacks
         _speed = 0;
         _playerBody = _animator.transform;
         _animationEventHandler = GetComponentInChildren<AnimationEventHandler>();
+        _inventory = GetComponent<Inventory>();
         _animationEventHandler.AttackEvent += AttackEvent;
+        _animationEventHandler.EquipEvent += Equip;
     }
 
     void AnimInit()
@@ -71,6 +82,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
         _animYSpeed = Animator.StringToHash("ySpeed");
         _animAttack = Animator.StringToHash("AttackType");
         _animJump = Animator.StringToHash("isJump");
+        _animIsEquip = Animator.StringToHash("isEquip");
     }
 
     void Update()
@@ -79,8 +91,6 @@ public class PlayerController : MonoBehaviourPunCallbacks
             return;
         JumpDelayTimer();
     }
-
-
 
     void FixedUpdate()
     {
@@ -121,39 +131,14 @@ public class PlayerController : MonoBehaviourPunCallbacks
         //내 플레이어만 수행하도록 IsMine 처리 
         if (!_pv.IsMine)
             return;
-
+        if (EventSystem.current.IsPointerOverGameObject())
+            return;
+        
         //장착 아이템별로 공격 애니메이션 상이 처리 
-
-        //주먹 공격모션
-        if (Equipment == "")
-        {
-             AttackType = Random.Range(1, 3);
-            if (!_animator.GetCurrentAnimatorStateInfo(1).IsName("AttackType"))
-            {
-                _animator.SetInteger(_animAttack, AttackType);
-            }
-        }
-
-        //소드장착시 공격모션
-        else if (Equipment == "Sword")
-        {
-             AttackType = 3;
-            if (!_animator.GetCurrentAnimatorStateInfo(1).IsName("AttackType"))
-            {
-                _animator.SetInteger(_animAttack, AttackType);
-            }
-        }
-
-        //대거장착시 공격모션
-        else if(Equipment == " Dagger")
-        {
-             AttackType = 4;
-            if (!_animator.GetCurrentAnimatorStateInfo(1).IsName("AttackType"))
-            {
-                _animator.SetInteger(_animAttack, AttackType);
-            }
-        }
-
+        if (!_isEquip)
+            _attackType = (AttackType)Random.Range(-2, 0);
+        
+        _animator.SetInteger(_animAttack, (int)_attackType);
     }
 
     void OnDrawGizmos()
@@ -161,8 +146,6 @@ public class PlayerController : MonoBehaviourPunCallbacks
         Gizmos.DrawSphere(_playerBody.position, _radius);
         Gizmos.DrawRay(_playerBody.position + Vector3.up * 0.9f, _playerBody.forward);
     }
-
-    
 
     void JumpDelayTimer()
     {
@@ -227,11 +210,11 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
     public void AttackEvent(int damage)
     {
-        
         RaycastHit hit;
-        _animator.SetInteger(_animAttack, 0);
         Debug.DrawRay(_playerBody.position + Vector3.up * 1.5f, _playerBody.forward * 2);
-
+        
+        _animator.SetInteger(_animAttack, (int)AttackType.None);
+        
         if (!Physics.Raycast(_playerBody.position + Vector3.up * 0.9f, _playerBody.forward, out hit, 1f))
             return;
 
@@ -240,6 +223,43 @@ public class PlayerController : MonoBehaviourPunCallbacks
         IDamageable damageable = hit.collider.GetComponent<IDamageable>();
         if (damageable.Equals(null))
             return;
+        Debug.Log(damageable);
+        Debug.Log(damage);
         damageable.Damage(damage);
     }
+
+    public void SetAttackType(AttackType attackType)
+    {
+        _attackType = attackType;
+    }
+
+    public AttackType GetAttackType()
+    {
+        return _attackType;
+    }
+
+    public bool GetIsEquip()
+    {
+        return _isEquip;
+    }
+
+    public void SetIsEquip(bool isEquip)
+    {
+        _isEquip = isEquip;
+        _animator.SetBool(_animIsEquip, isEquip);
+    }
+
+    public void WeaponSet(Item item, bool isActive)
+    {
+        _currentItem = item;
+        _itemActive = isActive;
+    }
+
+    void Equip()
+    {
+        _inventory.ItemDict[_currentItem.ItemList].SetActive(_itemActive);
+    }
+
+    
 }
+

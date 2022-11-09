@@ -13,39 +13,38 @@ public class Enemy : LivingEntity, IDamageable
         anim = GetComponent<Animator>();
     }
 
-
     void OnCollisionEnter(Collision collision)
     {
-        collision.collider.GetComponent<IDamageable>().Damage(damage);
-
+        if (collision.collider.CompareTag("Player"))
+            collision.collider.GetComponent<IDamageable>().Damage(damage);
     }
 
     public void Damage(int amount)
     {
         health -= amount;
 
-        // µ¥¹ÌÁö¿¡ µû¸¥ ÇÇ°Ý ¾Ö´Ï¸ÞÀÌ¼Ç Ã³¸®
-        // ¾Ö´Ï¸ÞÀÌÅÍ ºí·£´õ »ç¿ë or . . Á¶°ÇÃ³¸® 
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ç°ï¿½ ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ Ã³ï¿½ï¿½
+        // ï¿½Ö´Ï¸ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ or . . ï¿½ï¿½ï¿½ï¿½Ã³ï¿½ï¿½ 
 
 
-        //10 ¹Ì¸¸ÀÇ µ¥¹ÌÁö¸¦ ÀÔ¾úÀ»¶§ 
-        if(amount < 10) {
+        //10 ï¿½Ì¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¾ï¿½ï¿½ï¿½ï¿½ï¿½ 
+        if(amount <= 10) {
 
-            Debug.Log(amount +"ÀÇ µ¥¹ÌÁö¸¦ ÀÔÀ½ !!");
+            Debug.Log(amount +"ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ !!");
             anim.SetTrigger("LowHit");
         }
 
-        //10~19 »çÀÌÀÇ µ¥¹ÌÁö¸¦ ÀÔ¾úÀ»¶§
-        if(amount >= 10 && amount < 20)
+        //10~19 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¾ï¿½ï¿½ï¿½ï¿½ï¿½
+        if(amount > 10 && amount <= 20)
         {
-            Debug.Log(amount + "ÀÇ µ¥¹ÌÁö¸¦ ÀÔÀ½ !!");
+            Debug.Log(amount + "ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ !!");
             anim.SetTrigger("MiddleHit");
         }
 
-        // 20~29 »çÀÌÀÇ µ¥¹ÌÁö¸¦ ÀÔ¾úÀ»¶§
-        if (amount >= 20 && amount < 30)
+        // 20~29 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¾ï¿½ï¿½ï¿½ï¿½ï¿½
+        if (amount > 20)
         {
-            Debug.Log(amount + "ÀÇ µ¥¹ÌÁö¸¦ ÀÔÀ½ !!");
+            Debug.Log(amount + "ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ !!");
             anim.SetTrigger("HighHit");
         }
 

@@ -7,6 +7,7 @@ using UnityEngine;
 public class AnimationEventHandler : MonoBehaviour
 {
     public Action<int> AttackEvent;
+    public Action EquipEvent;
     PlayerController player;
 
     int damage;
@@ -15,8 +16,13 @@ public class AnimationEventHandler : MonoBehaviour
     {
         player = GetComponentInParent<PlayerController>();
     }
+    
+    void OnEquipEvent()
+    {
+        EquipEvent?.Invoke();
+    }
 
-    public void OnAttackEvent()
+    void OnAttackEvent()
     {
         damage = player._damage;
         AttackEvent?.Invoke(damage);

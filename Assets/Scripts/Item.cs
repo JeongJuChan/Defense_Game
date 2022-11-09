@@ -4,6 +4,7 @@ using UnityEngine;
 
 public enum ItemType
 {
+    None,
     Equipment,
     Consumables,
     Etc
@@ -19,6 +20,7 @@ public class Item
     public Material itemImage2;
     public Sprite Image;
     public ItemList ItemList;
+    public AttackType attackType;
 
     public List<ItemEffect> efts;
     
