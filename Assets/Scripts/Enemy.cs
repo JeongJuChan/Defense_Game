@@ -9,12 +9,12 @@ public class Enemy : LivingEntity, IDamageable
     public int Damage { get; set; }
     public int Health { get; set; }
 
-    int _hitAnim;
+    public int HitAnim { get; private set; }
 
     protected override void Init()
     {
         pv = GetComponent<PhotonView>();
-        animator = GetComponentInChildren<Animator>();
+        anim = GetComponentInChildren<Animator>();
         rigidbody = GetComponent<Rigidbody>();
         Health = 50;
         Damage = 5;
@@ -22,7 +22,7 @@ public class Enemy : LivingEntity, IDamageable
 
     protected override void AnimInit()
     {
-        _hitAnim = Animator.StringToHash("hitAnim");
+        HitAnim = Animator.StringToHash("hitAnim");
     }
     
     void OnCollisionEnter(Collision collision)
@@ -33,8 +33,9 @@ public class Enemy : LivingEntity, IDamageable
 
     public void Damaged(int amount)
     {
+        Debug.Log(amount);
         Health -= amount;
-        anim.SetInteger(_hitAnim, amount);
+        anim.SetInteger(HitAnim, amount);
     }
     
    

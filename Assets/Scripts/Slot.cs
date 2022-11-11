@@ -18,10 +18,12 @@ public class Slot : MonoBehaviourPunCallbacks, IPointerUpHandler
     
     Animator _animator;
     PlayerController _playerStatus;
+    PlayerStat _stat;
 
     private void Start()
     {
         _playerStatus = GetComponentInParent<PlayerController>();
+        _stat = GetComponentInParent<PlayerStat>();
         _animator = _playerStatus.GetComponentInChildren<Animator>();
     }
 
@@ -51,7 +53,7 @@ public class Slot : MonoBehaviourPunCallbacks, IPointerUpHandler
                     // UI적으로 보여줄 스트립트
                     // 실질적으로 데미지를 올려줄 스크립트
                     photonView.RPC(nameof(WeaponSetRPC), RpcTarget.AllBuffered, true);
-                    _playerStatus.SetDamage(item.efts[0].value);
+                    _stat.SetDamage(item.efts[0].value);
                     _playerStatus.SetAttackType(item.attackType);
                 }
                 else
@@ -60,7 +62,7 @@ public class Slot : MonoBehaviourPunCallbacks, IPointerUpHandler
                     //Debug.Log("Sword를 장착 해제하였습니다!");
                     photonView.RPC(nameof(WeaponSetRPC), RpcTarget.AllBuffered, false);
                     // 실질적으로 데미지를 내려줄 스크립트
-                    _playerStatus.SetDamage(-item.efts[0].value);
+                    _stat.SetDamage(-item.efts[0].value);
                     _playerStatus.SetAttackType(AttackType.None);
                 }
             }

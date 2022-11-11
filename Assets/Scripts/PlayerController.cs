@@ -19,7 +19,6 @@ public enum AttackType
 public class PlayerController : LivingEntity
 {
     //무기 장착 여부
-    [SerializeField] int _damage = 5;
     [SerializeField] float _speed = 100f;
     [SerializeField] float _radius = 1f;
     [SerializeField] float _jumpPower = 0.4f;
@@ -44,7 +43,7 @@ public class PlayerController : LivingEntity
     bool _itemActive;
     Vector3 _direction;
     Vector3 _moveDir;
-    AnimationEventHandler _animationEventHandler;
+    PlayerAnimationEvent _animationEventHandler;
     Transform _playerBody;
     Inventory _inventory;
     Item _currentItem;
@@ -57,14 +56,14 @@ public class PlayerController : LivingEntity
     protected override void Init()
     {
         pv = GetComponent<PhotonView>();
-        animator = GetComponentInChildren<Animator>();
+        anim = GetComponentInChildren<Animator>();
         rigidbody = GetComponent<Rigidbody>();
         _inventory = GetComponent<Inventory>();
-        _animationEventHandler = GetComponentInChildren<AnimationEventHandler>();
+        _animationEventHandler = GetComponentInChildren<PlayerAnimationEvent>();
         
         _offsetSpeed = _speed;
         _speed = 0;
-        _playerBody = animator.transform;
+        _playerBody = anim.transform;
         
         _animationEventHandler.AttackEvent += AttackEvent;
         _animationEventHandler.EquipEvent += Equip;
@@ -109,7 +108,7 @@ public class PlayerController : LivingEntity
         Vector3 forceVel = rigidbody.velocity;
         forceVel.y = -_jumpPower * Physics.gravity.y;
         rigidbody.velocity = forceVel;
-        animator.SetBool(_animJump, true);
+        anim.SetBool(_animJump, true);
         _jumpTimer = _jumpTime;
     }
 
@@ -132,7 +131,7 @@ public class PlayerController : LivingEntity
         if (!_isEquip)
             _attackType = (AttackType)Random.Range(-2, 0);
         
-        animator.SetInteger(_animAttack, (int)_attackType);
+        anim.SetInteger(_animAttack, (int)_attackType);
     }
 
     void OnDrawGizmos()
@@ -149,7 +148,7 @@ public class PlayerController : LivingEntity
         if (_jumpTimer <= 0.0f)
         {
             _canJump = true;
-            animator.SetBool(_animJump, false);
+            anim.SetBool(_animJump, false);
         }
 
         if (_jumpTimer > 0.0f)
@@ -177,9 +176,6 @@ public class PlayerController : LivingEntity
             rigidbody.velocity = _moveDir;
         }
 
-        // Vector3 heading = _camera.localRotation * _direction;
-        // transform.rotation = Quaternion.LookRotation(_direction);
-
         MoveAnimation(targetSpeed);
     }
 
@@ -188,8 +184,8 @@ public class PlayerController : LivingEntity
         // 애니메이션
         float animSpeedY = _direction.z * targetSpeed / _moveAnimationMod;
         float animSpeedX = _direction.x * _speed / _moveAnimationMod;
-        animator.SetFloat(_animYSpeed, animSpeedY);
-        animator.SetFloat(_animXSpeed, animSpeedX);
+        anim.SetFloat(_animYSpeed, animSpeedY);
+        anim.SetFloat(_animXSpeed, animSpeedX);
     }
 
     void CheckGround()
@@ -205,7 +201,7 @@ public class PlayerController : LivingEntity
         RaycastHit hit;
         Debug.DrawRay(_playerBody.position + Vector3.up * 1.5f, _playerBody.forward * 2);
         
-        animator.SetInteger(_animAttack, (int)AttackType.None);
+        anim.SetInteger(_animAttack, (int)AttackType.None);
         
         if (!Physics.Raycast(_playerBody.position + Vector3.up * 0.9f, _playerBody.forward, out hit, 1f))
             return;
@@ -233,7 +229,7 @@ public class PlayerController : LivingEntity
     public void SetIsEquip(bool isEquip)
     {
         _isEquip = isEquip;
-        animator.SetBool(_animIsEquip, isEquip);
+        anim.SetBool(_animIsEquip, isEquip);
     }
 
     public void WeaponSet(Item item, bool isActive)
@@ -244,13 +240,13 @@ public class PlayerController : LivingEntity
 
     void Equip()
     {
+        foreach (KeyValuePair<ItemList, GameObject> pair in _inventory.ItemDict)
+        {
+            if (pair.Value.activeSelf)
+                pair.Value.SetActive(false);
+        }
         _inventory.ItemDict[_currentItem.ItemList].SetActive(_itemActive);
+        Debug.Log($"_itemActive : {_itemActive}");
     }
-
-    public void SetDamage(int amount)
-    {
-        _damage += amount;
-    }
-    
 }
 

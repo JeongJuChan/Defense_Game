@@ -5,8 +5,10 @@ using UnityEngine;
 
 public class PlayerStat : MonoBehaviour, IDamageable
 {
-    public int Damage { get; set; }
-    public int Health { get; set; }
+    [SerializeField] int _damage;
+    public int Damage { get => _damage; set => _damage = value; }
+    [SerializeField] int _health;
+    public int Health { get => _health; set => _health = value; }
     
     [SerializeField] float _blinkTimer = 1f;
     [SerializeField] float _blinkTime;
@@ -23,6 +25,8 @@ public class PlayerStat : MonoBehaviour, IDamageable
     {
         _meshGameObject = GameObject.Find("Mesh");
         _blinkTime = _blinkTimer;
+        Damage = 5;
+        Health = 100;
     }
 
     void Update()
@@ -48,6 +52,13 @@ public class PlayerStat : MonoBehaviour, IDamageable
             _meshGameObject.SetActive(true);
             _isInvincible = false;
         }            
+    }
+    
+    
+    
+    public void SetDamage(int amount)
+    {
+        Damage += amount;
     }
 
     public void Damaged(int amount)

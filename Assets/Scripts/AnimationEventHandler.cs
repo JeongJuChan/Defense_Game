@@ -4,25 +4,12 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class AnimationEventHandler : MonoBehaviour
+public abstract class AnimationEventHandler : MonoBehaviour
 {
     public Action<int> AttackEvent;
-    public Action EquipEvent;
-    
-    PlayerStat _player;
 
-    void Awake()
-    {
-        _player = GetComponentInParent<PlayerStat>();
-    }
-    
-    void OnEquipEvent()
-    {
-        EquipEvent?.Invoke();
-    }
+    protected abstract void OnAttackEvent();
+    protected abstract void OnDamagedEvent();
 
-    void OnAttackEvent()
-    {
-        AttackEvent?.Invoke(_player.Damage);
-    }
+
 }

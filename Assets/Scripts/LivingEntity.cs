@@ -8,7 +8,6 @@ public abstract class LivingEntity : MonoBehaviourPunCallbacks
 {
     protected Animator anim;
     protected Rigidbody rigidbody;
-    protected Animator animator;
     protected PhotonView pv;
     
     void Awake()
