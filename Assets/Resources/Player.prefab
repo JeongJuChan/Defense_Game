@@ -3103,9 +3103,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 506255531491558454}
-  - component: {fileID: 506255531491558191}
   - component: {fileID: 1208289689473552422}
-  - component: {fileID: 6501899074364637975}
+  - component: {fileID: 1346322246231142351}
+  - component: {fileID: 5483996934190746026}
+  - component: {fileID: 4747383863448310469}
   m_Layer: 0
   m_Name: HumanMale_Character
   m_TagString: Untagged
@@ -3131,26 +3132,6 @@ Transform:
   m_Father: {fileID: 4704561254744341940}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &506255531491558191
-Animator:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 506255531491558815}
-  m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: 3443a9693cfcd8a4fbd4cbbee065454d, type: 3}
-  m_Controller: {fileID: 9100000, guid: f6af587a95e6a6c49a27f85438534e95, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!114 &1208289689473552422
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3163,7 +3144,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da01d9cb924fc2b489aac53fd90c20b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &6501899074364637975
+--- !u!114 &1346322246231142351
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3187,14 +3168,53 @@ MonoBehaviour:
   - Type: 4
     SynchronizeType: 1
     Name: isJump
-  - Type: 1
+  - Type: 3
     SynchronizeType: 1
-    Name: randomAttack
+    Name: AttackType
+  - Type: 4
+    SynchronizeType: 1
+    Name: isEquip
   m_SynchronizeLayers:
   - SynchronizeType: 1
     LayerIndex: 0
   - SynchronizeType: 1
     LayerIndex: 1
+--- !u!95 &5483996934190746026
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 506255531491558815}
+  m_Enabled: 1
+  m_Avatar: {fileID: 9000000, guid: 3443a9693cfcd8a4fbd4cbbee065454d, type: 3}
+  m_Controller: {fileID: 9100000, guid: f6af587a95e6a6c49a27f85438534e95, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &4747383863448310469
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 506255531491558815}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 0
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
 --- !u!1 &506255531491558816
 GameObject:
   m_ObjectHideFlags: 0
@@ -6269,7 +6289,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _camTrans: {fileID: 2564533745060306684}
-  deltaMod: 0.25
+  _deltaMod: 0.25
 --- !u!114 &8688049854133722803
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6282,10 +6302,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08384a92a0dca4649952f161bd0598a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 10
-  health: 10
-  blinkTimer: 1
-  blinkTime: 0
+  _blinkTimer: 1
+  _blinkTime: 0
 --- !u!114 &6508499658017633089
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6307,7 +6325,8 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 8153089059032808476}
   - {fileID: 7529382622751330292}
-  - {fileID: 6501899074364637975}
+  - {fileID: 1346322246231142351}
+  - {fileID: 4747383863448310469}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -6324,7 +6343,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_SynchronizePosition: 1
-  m_SynchronizeRotation: 1
+  m_SynchronizeRotation: 0
   m_SynchronizeScale: 0
   m_UseLocal: 1
 --- !u!114 &7529382622751330292
@@ -6394,10 +6413,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6422f630154928c418def9e297bcb990, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inven: {fileID: 7444585120569961461}
   inventoryPanel: {fileID: 5832340400664805804}
   slots: []
   slotHolder: {fileID: 5832340400664805807}
+  inven: {fileID: 7444585120569961461}
 --- !u!1 &7177928341017481727
 GameObject:
   m_ObjectHideFlags: 0

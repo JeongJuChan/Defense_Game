@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class RPCTest : MonoBehaviourPunCallbacks
 {
+    // TODO 지우기
     void Update()
     {
         if (photonView.IsMine && Input.GetMouseButtonDown(0))

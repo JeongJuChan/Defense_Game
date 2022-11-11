@@ -7,6 +7,7 @@ using TMPro;
 public class PlayerNick : MonoBehaviourPunCallbacks
 {
     [SerializeField] Transform _cameraRoot;
+    
     void Start()
     {
         var nickName = GetComponent<TMP_Text>();
@@ -15,8 +16,4 @@ public class PlayerNick : MonoBehaviourPunCallbacks
             transform.parent = _cameraRoot;
     }
 
-    void Update()
-    {
-        
-    }
 }

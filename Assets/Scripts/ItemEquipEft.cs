@@ -7,7 +7,6 @@ using UnityEngine;
 public class ItemEquipEft : ItemEffect
 {
     public int DamagePoint = 0;
-    public string ItemName;
 
     private void Awake()
     {

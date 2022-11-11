@@ -21,9 +21,7 @@ public class Item
     public Sprite Image;
     public ItemList ItemList;
     public AttackType attackType;
-
     public List<ItemEffect> efts;
-    
 
     public bool Use()
     {

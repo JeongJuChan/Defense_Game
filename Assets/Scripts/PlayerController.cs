@@ -16,11 +16,10 @@ public enum AttackType
 }
 
 [RequireComponent(typeof(Rigidbody))]
-public class PlayerController : MonoBehaviourPunCallbacks
+public class PlayerController : LivingEntity
 {
-    //무기 장착 여부 
-    public int _damage = 5;
-    
+    //무기 장착 여부
+    [SerializeField] int _damage = 5;
     [SerializeField] float _speed = 100f;
     [SerializeField] float _radius = 1f;
     [SerializeField] float _jumpPower = 0.4f;
@@ -41,42 +40,37 @@ public class PlayerController : MonoBehaviourPunCallbacks
     int _animIsEquip;
 
     float _offsetSpeed;
-    bool _canJump = true;
+    bool _canJump;
+    bool _itemActive;
     Vector3 _direction;
-    Rigidbody _rigidbody;
     Vector3 _moveDir;
-    Animator _animator;
     AnimationEventHandler _animationEventHandler;
     Transform _playerBody;
-    PhotonView _pv;
     Inventory _inventory;
     Item _currentItem;
-    bool _itemActive;
-
-    
     
     void Start()
     {
-        Debug.Log("플레이어 생성 !");
-        Init();
         AnimInit();
     }
-    
-    void Init()
+
+    protected override void Init()
     {
-        _pv = GetComponent<PhotonView>();
-        _animator = GetComponentInChildren<Animator>();
-        _rigidbody = GetComponent<Rigidbody>();
+        pv = GetComponent<PhotonView>();
+        animator = GetComponentInChildren<Animator>();
+        rigidbody = GetComponent<Rigidbody>();
+        _inventory = GetComponent<Inventory>();
+        _animationEventHandler = GetComponentInChildren<AnimationEventHandler>();
+        
         _offsetSpeed = _speed;
         _speed = 0;
-        _playerBody = _animator.transform;
-        _animationEventHandler = GetComponentInChildren<AnimationEventHandler>();
-        _inventory = GetComponent<Inventory>();
+        _playerBody = animator.transform;
+        
         _animationEventHandler.AttackEvent += AttackEvent;
         _animationEventHandler.EquipEvent += Equip;
     }
 
-    void AnimInit()
+    protected override void AnimInit()
     {
         _animXSpeed = Animator.StringToHash("xSpeed");
         _animYSpeed = Animator.StringToHash("ySpeed");
@@ -87,14 +81,14 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
     void Update()
     {
-        if (!_pv.IsMine)
+        if (!pv.IsMine)
             return;
         JumpDelayTimer();
     }
 
     void FixedUpdate()
     {
-        if (!_pv.IsMine)
+        if (!pv.IsMine)
             return;
         Move();
         CheckGround();
@@ -112,10 +106,10 @@ public class PlayerController : MonoBehaviourPunCallbacks
     {
         if (!_isGrounded || !_canJump)
             return;
-        Vector3 forceVel = _rigidbody.velocity;
+        Vector3 forceVel = rigidbody.velocity;
         forceVel.y = -_jumpPower * Physics.gravity.y;
-        _rigidbody.velocity = forceVel;
-        _animator.SetBool(_animJump, true);
+        rigidbody.velocity = forceVel;
+        animator.SetBool(_animJump, true);
         _jumpTimer = _jumpTime;
     }
 
@@ -129,7 +123,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
     void OnFire()
     {
         //내 플레이어만 수행하도록 IsMine 처리 
-        if (!_pv.IsMine)
+        if (!pv.IsMine)
             return;
         if (EventSystem.current.IsPointerOverGameObject())
             return;
@@ -138,11 +132,13 @@ public class PlayerController : MonoBehaviourPunCallbacks
         if (!_isEquip)
             _attackType = (AttackType)Random.Range(-2, 0);
         
-        _animator.SetInteger(_animAttack, (int)_attackType);
+        animator.SetInteger(_animAttack, (int)_attackType);
     }
 
     void OnDrawGizmos()
     {
+        if (!Application.isPlaying)
+            return;
         Gizmos.DrawSphere(_playerBody.position, _radius);
         Gizmos.DrawRay(_playerBody.position + Vector3.up * 0.9f, _playerBody.forward);
     }
@@ -153,7 +149,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
         if (_jumpTimer <= 0.0f)
         {
             _canJump = true;
-            _animator.SetBool(_animJump, false);
+            animator.SetBool(_animJump, false);
         }
 
         if (_jumpTimer > 0.0f)
@@ -167,7 +163,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
     {
         
         float targetSpeed = _isSprint ? _sprintSpeed : _speed;
-        float fallSpeed = _rigidbody.velocity.y;
+        float fallSpeed = rigidbody.velocity.y;
         if (_direction.sqrMagnitude != 0)
         {
             Vector3 lookForward = new Vector3(_camTrans.forward.x, 0f, _camTrans.forward.z).normalized;
@@ -178,7 +174,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
             // transform.forward = lookForward로 하면 카메라에 따라 캐릭터도 회전하게 됨
             _playerBody.forward = _moveDir;
             _moveDir.y = fallSpeed;
-            _rigidbody.velocity = _moveDir;
+            rigidbody.velocity = _moveDir;
         }
 
         // Vector3 heading = _camera.localRotation * _direction;
@@ -192,20 +188,16 @@ public class PlayerController : MonoBehaviourPunCallbacks
         // 애니메이션
         float animSpeedY = _direction.z * targetSpeed / _moveAnimationMod;
         float animSpeedX = _direction.x * _speed / _moveAnimationMod;
-        _animator.SetFloat(_animYSpeed, animSpeedY);
-        _animator.SetFloat(_animXSpeed, animSpeedX);
+        animator.SetFloat(_animYSpeed, animSpeedY);
+        animator.SetFloat(_animXSpeed, animSpeedX);
     }
 
     void CheckGround()
     {
         if (Physics.CheckSphere(transform.position, _radius, 1 << 6, QueryTriggerInteraction.Ignore))
-        {
             _isGrounded = true;
-        }
         else
-        {
             _isGrounded = false;
-        }
     }
 
     public void AttackEvent(int damage)
@@ -213,7 +205,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
         RaycastHit hit;
         Debug.DrawRay(_playerBody.position + Vector3.up * 1.5f, _playerBody.forward * 2);
         
-        _animator.SetInteger(_animAttack, (int)AttackType.None);
+        animator.SetInteger(_animAttack, (int)AttackType.None);
         
         if (!Physics.Raycast(_playerBody.position + Vector3.up * 0.9f, _playerBody.forward, out hit, 1f))
             return;
@@ -225,17 +217,12 @@ public class PlayerController : MonoBehaviourPunCallbacks
             return;
         Debug.Log(damageable);
         Debug.Log(damage);
-        damageable.Damage(damage);
+        damageable.Damaged(damage);
     }
 
     public void SetAttackType(AttackType attackType)
     {
         _attackType = attackType;
-    }
-
-    public AttackType GetAttackType()
-    {
-        return _attackType;
     }
 
     public bool GetIsEquip()
@@ -246,7 +233,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
     public void SetIsEquip(bool isEquip)
     {
         _isEquip = isEquip;
-        _animator.SetBool(_animIsEquip, isEquip);
+        animator.SetBool(_animIsEquip, isEquip);
     }
 
     public void WeaponSet(Item item, bool isActive)
@@ -260,6 +247,10 @@ public class PlayerController : MonoBehaviourPunCallbacks
         _inventory.ItemDict[_currentItem.ItemList].SetActive(_itemActive);
     }
 
+    public void SetDamage(int amount)
+    {
+        _damage += amount;
+    }
     
 }
 

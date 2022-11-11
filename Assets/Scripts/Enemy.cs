@@ -1,52 +1,41 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 
 public class Enemy : LivingEntity, IDamageable
 {
-    Rigidbody rigid;
+    public int Damage { get; set; }
+    public int Health { get; set; }
 
-    private void Awake()
+    int _hitAnim;
+
+    protected override void Init()
     {
-        rigid = GetComponent<Rigidbody>();
-        anim = GetComponent<Animator>();
+        pv = GetComponent<PhotonView>();
+        animator = GetComponentInChildren<Animator>();
+        rigidbody = GetComponent<Rigidbody>();
+        Health = 50;
+        Damage = 5;
     }
 
+    protected override void AnimInit()
+    {
+        _hitAnim = Animator.StringToHash("hitAnim");
+    }
+    
     void OnCollisionEnter(Collision collision)
     {
         if (collision.collider.CompareTag("Player"))
-            collision.collider.GetComponent<IDamageable>().Damage(damage);
+            collision.collider.GetComponent<IDamageable>().Damaged(Damage);
     }
 
-    public void Damage(int amount)
+    public void Damaged(int amount)
     {
-        health -= amount;
-
-        // �������� ���� �ǰ� �ִϸ��̼� ó��
-        // �ִϸ����� ���� ��� or . . ����ó�� 
-
-
-        //10 �̸��� �������� �Ծ����� 
-        if(amount <= 10) {
-
-            Debug.Log(amount +"�� �������� ���� !!");
-            anim.SetTrigger("LowHit");
-        }
-
-        //10~19 ������ �������� �Ծ�����
-        if(amount > 10 && amount <= 20)
-        {
-            Debug.Log(amount + "�� �������� ���� !!");
-            anim.SetTrigger("MiddleHit");
-        }
-
-        // 20~29 ������ �������� �Ծ�����
-        if (amount > 20)
-        {
-            Debug.Log(amount + "�� �������� ���� !!");
-            anim.SetTrigger("HighHit");
-        }
-
+        Health -= amount;
+        anim.SetInteger(_hitAnim, amount);
     }
+    
+   
 }

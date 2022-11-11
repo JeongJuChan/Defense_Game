@@ -1,14 +1,25 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 
-public class LivingEntity : MonoBehaviour
+public abstract class LivingEntity : MonoBehaviourPunCallbacks
 {
-    [SerializeField] protected int damage = 10;
-    [SerializeField] protected int health = 10;
     protected Animator anim;
-    public int Health { get => health; set => health = value; }
+    protected Rigidbody rigidbody;
+    protected Animator animator;
+    protected PhotonView pv;
+    
+    void Awake()
+    {
+        Init();
+        AnimInit();
+    }
+
+    protected abstract void Init();
+    protected abstract void AnimInit();
+
 
 
 }

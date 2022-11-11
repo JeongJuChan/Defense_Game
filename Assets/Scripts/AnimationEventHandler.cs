@@ -8,13 +8,12 @@ public class AnimationEventHandler : MonoBehaviour
 {
     public Action<int> AttackEvent;
     public Action EquipEvent;
-    PlayerController player;
+    
+    PlayerStat _player;
 
-    int damage;
-
-    private void Awake()
+    void Awake()
     {
-        player = GetComponentInParent<PlayerController>();
+        _player = GetComponentInParent<PlayerStat>();
     }
     
     void OnEquipEvent()
@@ -24,7 +23,6 @@ public class AnimationEventHandler : MonoBehaviour
 
     void OnAttackEvent()
     {
-        damage = player._damage;
-        AttackEvent?.Invoke(damage);
+        AttackEvent?.Invoke(_player.Damage);
     }
 }

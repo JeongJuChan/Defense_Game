@@ -3,12 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerHealth : LivingEntity, IDamageable
+public class PlayerStat : MonoBehaviour, IDamageable
 {
-    [SerializeField] float blinkTimer = 1f;
-    [SerializeField] float blinkTime = 0;
+    public int Damage { get; set; }
+    public int Health { get; set; }
+    
+    [SerializeField] float _blinkTimer = 1f;
+    [SerializeField] float _blinkTime;
+    
     GameObject _meshGameObject;
     bool _isInvincible;
+    
     void Start()
     {
         Init();
@@ -17,18 +22,13 @@ public class PlayerHealth : LivingEntity, IDamageable
     void Init()
     {
         _meshGameObject = GameObject.Find("Mesh");
-        blinkTime = blinkTimer;
+        _blinkTime = _blinkTimer;
     }
 
     void Update()
     {
-        Blink();
-    }
-
-    public void Damage(int amount)
-    {
-        //base.Damage(amount);
-        _isInvincible = true;
+        // TODO 포스트 프로세싱으로 바꾸기
+        // Blink();
     }
     
     // TODO : 메쉬 깜빡이는 걸로 바꾸기
@@ -36,17 +36,25 @@ public class PlayerHealth : LivingEntity, IDamageable
     {
         if (!_isInvincible)
             return;
-        if (blinkTime >= 0)
+        if (_blinkTime >= 0)
         {
-            blinkTime -= Time.deltaTime;
+            _blinkTime -= Time.deltaTime;
             if (_meshGameObject.activeInHierarchy)
                 _meshGameObject.SetActive(false);
         }
         else
         {
-            blinkTime = blinkTimer;
+            _blinkTime = _blinkTimer;
             _meshGameObject.SetActive(true);
             _isInvincible = false;
         }            
     }
+
+    public void Damaged(int amount)
+    {
+        Health -= amount;
+        _isInvincible = true;
+    }
+    
+    
 }

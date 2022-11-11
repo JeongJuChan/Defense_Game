@@ -12,8 +12,8 @@ using Random = UnityEngine.Random;
 public class NetworkManager : MonoBehaviourPunCallbacks
 {
     [SerializeField] TextMeshProUGUI inputText;
-    static NetworkManager _instance;
 
+    static NetworkManager _instance;
     public static NetworkManager Instance
     {
         get
@@ -33,15 +33,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         DontDestroyOnLoad(this);
     }
 
-    public void ConnectBtn()
-    {
-       // PhotonNetwork.IsMessageQueueRunning = false;
-        SceneManager.LoadScene(1);
-        PhotonNetwork.ConnectUsingSettings();
-        PhotonNetwork.NickName = inputText.text;
-        
-    }
-
     public override void OnConnectedToMaster()
     {
         PhotonNetwork.JoinOrCreateRoom("Room", new RoomOptions(), TypedLobby.Default);
@@ -54,7 +45,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         //PhotonNetwork.IsMessageQueueRunning = true;
         var pos = new Vector3(Random.Range(40f, 43f), 6f, Random.Range(66f, 70f));
         PhotonNetwork.Instantiate("Player", pos, Quaternion.identity);
-
+        FindObjectOfType<ItemDatabase>().CreateItem();
     }
 
     [ContextMenu("PlayerList")]
@@ -65,5 +56,14 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         {
             Debug.Log(VARIABLE); 
         }
+    }
+    
+    public void ConnectBtn()
+    {
+        // PhotonNetwork.IsMessageQueueRunning = false;
+        SceneManager.LoadScene(1);
+        PhotonNetwork.ConnectUsingSettings();
+        PhotonNetwork.NickName = inputText.text;
+        
     }
 }

@@ -4,55 +4,26 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System;
+using Photon.Pun;
 
-public class Slot : MonoBehaviour, IPointerUpHandler
+public class Slot : MonoBehaviourPunCallbacks, IPointerUpHandler
 {
-
-    PlayerController player_status;
+    public int slotNum;
+    public Item item;
+    public Image itemIcon;
+    public GameObject player;
 
     [SerializeField]
     Inventory inventory;
-    Animator _animator;
     
-    public int slotnum;
-    public Item item;
-    public Image itemIcon;
-    public GameObject Player;
+    Animator _animator;
+    PlayerController _playerStatus;
 
     private void Start()
     {
-        player_status = GetComponentInParent<PlayerController>();
-        _animator = player_status.GetComponentInChildren<Animator>();
+        _playerStatus = GetComponentInParent<PlayerController>();
+        _animator = _playerStatus.GetComponentInChildren<Animator>();
     }
-
-
-    //���� ������Ʈ (��ü �߰�)
-    public void UpdateSlotUI()
-    {
-        itemIcon.sprite = item.Image;
-        itemIcon.gameObject.SetActive(true);
-    }
-
-    //���� �ʱ�ȭ (��ü ����)
-    public void RemoveSlot()
-    {
-        item = null;
-        itemIcon.gameObject.SetActive(false);
-    }
-
-
-    public void OnEquip()
-    {
-        // UI적으로 보여줄 스트립트
-        GetComponentInParent<Inventory>().ItemDict[item.ItemList].SetActive(true);
-    }
-
-    public void OnUpEquip()
-    {
-        // UI적으로 보여줄 스트립트
-        GetComponentInParent<Inventory>().ItemDict[item.ItemList].SetActive(false);
-    }
-
 
     public void OnPointerUp(PointerEventData eventData)
     {
@@ -63,37 +34,55 @@ public class Slot : MonoBehaviour, IPointerUpHandler
             if (item.itemType == ItemType.Consumables)
             {
                 Debug.Log("Hp를 회복하였습니다!");
-                GetComponentInParent<Inventory>().ItemDict[item.ItemList].SetActive(true);
-                inventory.RemoveItem(slotnum);
+                photonView.RPC(nameof(WeaponSetRPC), RpcTarget.AllBuffered, false);
+                inventory.RemoveItem(slotNum);
                 return;
             }
 
+            // TODO : 리팩토링
             // 장비를 장착하지 않고있을때
             if (item.itemType == ItemType.Equipment)
             {
-                bool isEquip = player_status.GetIsEquip();
+                bool isEquip = _playerStatus.GetIsEquip();
                 if (!isEquip)
                 {
-                    player_status.SetIsEquip(true);
+                    _playerStatus.SetIsEquip(true);
                     //Debug.Log("Sword를 장착하였습니다!");
                     // UI적으로 보여줄 스트립트
-                    player_status.WeaponSet(item ,true);
-                    // 실질적으로 데미지를 올려줄 스크립트 
-                    player_status._damage += item.efts[0].value;
-                    Debug.Log(item.attackType);
-                    player_status.SetAttackType(item.attackType);
+                    // 실질적으로 데미지를 올려줄 스크립트
+                    photonView.RPC(nameof(WeaponSetRPC), RpcTarget.AllBuffered, true);
+                    _playerStatus.SetDamage(item.efts[0].value);
+                    _playerStatus.SetAttackType(item.attackType);
                 }
                 else
                 {
-                    player_status.SetIsEquip(false);
+                    _playerStatus.SetIsEquip(false);
                     //Debug.Log("Sword를 장착 해제하였습니다!");
-                    player_status.WeaponSet(item ,false);
-                    // 실질적으로 데미지를 내려줄 스크립트 
-                    player_status._damage -= item.efts[0].value;
-                    player_status.SetAttackType(AttackType.None);
+                    photonView.RPC(nameof(WeaponSetRPC), RpcTarget.AllBuffered, false);
+                    // 실질적으로 데미지를 내려줄 스크립트
+                    _playerStatus.SetDamage(-item.efts[0].value);
+                    _playerStatus.SetAttackType(AttackType.None);
                 }
             }
         }
+    }
+    
+    [PunRPC]
+    void WeaponSetRPC(bool isActive)
+    {
+        _playerStatus.WeaponSet(item ,isActive);
+    }
+    
+    public void UpdateSlotUI()
+    {
+        itemIcon.sprite = item.Image;
+        itemIcon.gameObject.SetActive(true);
+    }
+
+    public void RemoveSlot()
+    {
+        item = null;
+        itemIcon.gameObject.SetActive(false);
     }
 }
 

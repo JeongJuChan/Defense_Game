@@ -5,12 +5,13 @@ using Photon.Pun;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerRotation : MonoBehaviourPunCallbacks
+public class CameraMove : MonoBehaviourPunCallbacks
 {
     [SerializeField] Transform _camTrans;
-    [SerializeField] float deltaMod = 0.25f; 
+    [SerializeField] float _deltaMod = 0.25f; 
+    
     float _xRotation;
-    float yRotation;
+    float _yRotation;
     PhotonView _pv;
 
     void Start()
@@ -40,16 +41,11 @@ public class PlayerRotation : MonoBehaviourPunCallbacks
     void OnLook(InputValue value)
     {
         Vector2 mouseDelta = value.Get<Vector2>();
-        yRotation += mouseDelta.x * deltaMod;
+        _yRotation += mouseDelta.x * _deltaMod;
 
         _xRotation -= mouseDelta.y;
-        float xClampRotation = Mathf.Clamp(_xRotation * deltaMod, -30f, 40f);
-        _camTrans.localRotation = Quaternion.Euler(xClampRotation, yRotation, 0f);
-        
-        /*Vector3 camAngle = camTrans.rotation.eulerAngles;
-        float ClampAngleX = camAngle.x - mouseDelta.y;
-        ClampAngleX = ClampAngleX < 180 ? Mathf.Clamp(ClampAngleX, 0f, 40f) : Mathf.Clamp(ClampAngleX, 330f, 360f);
-        camTrans.rotation = Quaternion.Euler(ClampAngleX, camAngle.y + mouseDelta.x, camAngle.z);*/
+        float xClampRotation = Mathf.Clamp(_xRotation * _deltaMod, -30f, 40f);
+        _camTrans.localRotation = Quaternion.Euler(xClampRotation, _yRotation, 0f);
     }
     
    

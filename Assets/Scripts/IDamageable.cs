@@ -4,6 +4,7 @@ using UnityEngine;
 
 public interface IDamageable
 {
+    int Damage { get; set; }
     int Health { get; set; }
-    void Damage(int amount);
+    void Damaged(int amount);
 }

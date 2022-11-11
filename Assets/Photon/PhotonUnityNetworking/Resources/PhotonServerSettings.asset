@@ -41,6 +41,10 @@ MonoBehaviour:
   - RespawnSpaceship
   - RpcSendMessage
   - HitBullet
+  - CreateSyncRPC
+  - SetItemRPC
+  - DestroyItemRPC
+  - WeaponSetRPC
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
